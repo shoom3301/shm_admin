@@ -1,0 +1,45 @@
+﻿body, html{
+margin: 0;
+padding: 0;
+font-size: 14px;
+font-family: Arial, sans-serif;
+color: #252525;
+}
+
+ul, p, h1, h2, h3, h4, h5{
+margin: 0;
+padding: 0;
+}
+
+table.shm_table, .shm_add_form{
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+table.shm_table td{
+    border: 1px solid #000;
+}
+
+table.shm_table thead td{
+    padding: 10px;
+    background-color: #bcdcf9;
+    border-color: #6d92b5;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+table.shm_table tbody td, table.shm_table tfoot td{
+    padding: 10px;
+    color: #3f4850;
+}
+
+table.shm_table tfoot{
+    background-color: #f5f8ff;
+}
+
+.shm_table_form{
+    width: 80%;
+    overflow-x: scroll;
+    margin: 40px auto;
+}
