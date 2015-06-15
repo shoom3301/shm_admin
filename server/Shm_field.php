@@ -21,20 +21,24 @@ class Shm_field {
     /**
      * Рендерер ячейки
      * @param $type String тип рендеринга (вид, редактирование, добавление)
-     * @param $field String название столбца
      * @param $value String значение ячейки
      */
-    public function render($type, $field, $value = ''){
+    public function render($type, $value = ''){
         if($type=='view'){
-            echo $value;
+            if(isset($this->column['rel'])){
+                $rel = $this->column['rel'];
+                echo '<a data-shm-rel="'.$rel[0].'::'.$rel[1].'" href="">'.$value.'</a>';
+            }else{
+                echo '<span>'.$value.'</span>';
+            }
         }elseif($type=='edit'){
             echo '<input
                 type="text"
                 value="'.$value.'"
-                data-col="'.$field.'"
+                data-col="'.$this->column['id'].'"
                 />';
         }elseif($type=='add'){
-            echo '<input type="text" data-col="'.$field.'"/>';
+            echo '<input type="text" data-col="'.$this->column['id'].'"/>';
         }
     }
 }

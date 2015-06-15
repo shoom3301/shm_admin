@@ -43,3 +43,25 @@ table.shm_table tfoot{
     overflow-x: scroll;
     margin: 40px auto;
 }
+
+.rel_tooltip{
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 6px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 6;
+    display: none;
+}
+
+.close_tooltip{
+    position: absolute;
+    right: -30px;
+    top: -1px;
+    width: 30px;
+    height: 30px;
+    background: #ffffff url("../images/close_tooltip.png") no-repeat center center;
+    border: 1px solid #cccccc;
+    outline: none;
+    cursor: pointer;
+}

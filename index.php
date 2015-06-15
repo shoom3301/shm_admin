@@ -44,6 +44,19 @@ if(isset($_REQUEST['action'])){
             }else{
                 echo 0;
             }
+            return 1;
+            break;
+        /**
+         * Получение записи
+         */
+        case 'read':
+            echo json_encode(
+                ORM::for_table($_REQUEST['target'])
+                ->where($_REQUEST['field'], $_REQUEST['value'])
+                ->find_one()
+                ->as_array()
+            );
+            return 1;
             break;
         /**
          * Редактирование записи
@@ -55,6 +68,7 @@ if(isset($_REQUEST['action'])){
                 ->set($_REQUEST['col'], $_REQUEST['val'])
                 ->save()
             ;
+            return 1;
             break;
         /**
          * Удаление записи
@@ -65,10 +79,9 @@ if(isset($_REQUEST['action'])){
                 ->find_one()
                 ->delete()
             ;
+            return 1;
             break;
     }
-
-    return 1;
 }
 
 /**
@@ -102,6 +115,15 @@ $db = new Shm_database('xface', array(
         )
     )
 ));
+
+if(isset($_REQUEST['action'])){
+    switch($_REQUEST['action']){
+        case 'relation':
+            (new Shm_table($_REQUEST['target'], $db, array(), array(), true))->render_view();
+            return 1;
+            break;
+    }
+}
 ?>
 
 <!DOCTYPE HTML>
@@ -121,6 +143,7 @@ $db = new Shm_database('xface', array(
     <script type="text/javascript" src="lib/filter_input.js"></script>
 
     <script type="text/javascript" src="js/shm.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/Shm_rel_tooltip.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/Shm_table.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/Shm_add_form.js" charset="utf-8"></script>
 
@@ -128,6 +151,7 @@ $db = new Shm_database('xface', array(
 </head>
 <body>
 <div id="main">
+    <div id="rel_tooltip"></div>
     <div class="shm_table_form">
     <?php
     /**

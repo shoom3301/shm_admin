@@ -20,6 +20,36 @@ var Shm_table = Backbone.Model.extend({
                 table: this
             });
         }
+
+        var th = this;
+        this.el.find('a[data-shm-rel]').each(function(){
+            $(this).click(function(e){
+                var $th = $(this);
+                var rel = $th.data('shm-rel').split('::');
+                var tooltip = new Shm_rel_tooltip({
+                    target: $th,
+                    html: ''
+                });
+                tooltip.wait().show();
+
+                th.request('relation', {
+                    target: rel[0],
+                    field: rel[1],
+                    value: $th.html()
+                }, function(table){
+                    var $table = $(table);
+                    init_shm_table($table);
+                    tooltip.content($table);
+                }, function(){
+
+                }, {
+                    dataType: 'html'
+                });
+
+                e.preventDefault();
+                return false;
+            });
+        });
     },
     initRecord: function($record){
         var th = this;
@@ -90,7 +120,7 @@ var Shm_table = Backbone.Model.extend({
             });
         }
     },
-    request: function(action, data, success, error){
+    request: function(action, data, success, error, params){
         var _data = {
             action: action,
             table: this.get('name'),
@@ -103,13 +133,23 @@ var Shm_table = Backbone.Model.extend({
             }
         }
 
-        return $.ajax({
+        var _params = {
             url: location.origin+location.pathname,
             data: _data,
             dataType: 'json',
             success: success,
             error: error
-        });
+        };
+
+        if(params){
+            for(var s in params){
+                if(params.hasOwnProperty(s)){
+                    _params[s] = params[s];
+                }
+            }
+        }
+
+        return $.ajax(_params);
     },
     getId: function(input){
         return $(input).parents('tr').find('input[data-col="'+this.get('primary')+'"]')[0].default_value;

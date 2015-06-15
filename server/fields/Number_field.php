@@ -7,7 +7,7 @@
  */
 
 class Number_field extends Shm_field{
-    public function render($type, $field, $value = ''){
+    public function render($type, $value = ''){
         if($type=='view'){
             echo $value;
         }elseif($type=='edit'){
@@ -16,14 +16,14 @@ class Number_field extends Shm_field{
                 maxlength="'.$this->length.'"
                 type="text"
                 value="'.$value.'"
-                data-col="'.$field.'"
+                data-col="'.$this->column['id'].'"
                 />';
         }elseif($type=='add'){
             echo '<input
             type="text"
             data-shm-type="number"
             maxlength="'.$this->length.'"
-            data-col="'.$field.'"/>';
+            data-col="'.$this->column['id'].'"/>';
         }
     }
 }

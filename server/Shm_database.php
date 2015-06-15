@@ -27,7 +27,7 @@ class Shm_database {
     public function __construct($db_name, $tables_names = Array(), $params = array()){
         $this->name = $db_name;
         $this->tables_names = $tables_names;
-        $tables = ORM::for_table('')->raw_query('SHOW TABLES FROM '.$this->name)->find_array();
+        $tables = ORM::for_table($this->name)->raw_query('SHOW TABLES FROM `'.$this->name.'`')->find_array();
         if(isset($tables[0])){
             $key = key($tables[0]);
 
@@ -71,7 +71,7 @@ class Shm_database {
      * Редактирование таблицы
      */
     public function edit_table($table_name){
-        $table = new Shm_table($table_name, $this->edit_params['fields'], $this->edit_params['renders']);
+        $table = new Shm_table($table_name, $this, $this->edit_params['fields'], $this->edit_params['renders']);
         $table->render_edit();
     }
 
@@ -79,7 +79,7 @@ class Shm_database {
      * Отображение таблицы
      */
     public function view_table($table_name){
-        $table = new Shm_table($table_name, $this->view_params['fields'], $this->view_params['renders']);
+        $table = new Shm_table($table_name, $this, $this->view_params['fields'], $this->view_params['renders']);
         $table->render_view();
     }
 

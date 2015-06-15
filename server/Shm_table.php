@@ -19,12 +19,16 @@ class Shm_table {
     private $records = array();
     //Столбцы таблицы
     private $columns = array();
+
+    private $relations = array();
     //Ключевое поле таблицы
     private $primary = '';
     //Ключевое слово для ключевого поля
     private $fields_renders = array();
-    //Ключевое слово для ключевого поля
+    //Название ключевого поля
     public static $primary_name = 'PRI';
+    //Название связанного поля
+    public static $multi_name = 'MUL';
     //Регулярка для парсинга типа и длинны поля
     public static $column_type_regex = "/^(\w+)\(?(\d*)\)?\s?(\w*)$/";
 
@@ -33,12 +37,25 @@ class Shm_table {
      * @param $table_name String название таблицы
      * @param $fields Array дополнительные настройки полей
      * @param $fields_renders Array модели рендеринга полей
+     * @param $db Shm_database модель бд
+     * @param $one Boolean выбрать только одну запись из таблицы
      */
-    public function __construct($table_name, $fields = array(), $fields_renders = array()){
+    public function __construct($table_name, $db, $fields = array(), $fields_renders = array(), $one = false){
+        $this->db = $db;
         $this->name = $table_name;
-        $this->records = $this->table()->find_array();
 
-        $heading = $this->table()->raw_query('SHOW FULL COLUMNS FROM '.$this->name)->find_array();
+        $tbl = $this->table();
+        if($one){
+            $this->records = array($tbl->find_one()->as_array());
+        }else{
+            $this->records = $tbl->find_array();
+        }
+
+        $heading = $tbl->raw_query('SHOW FULL COLUMNS FROM `'.$this->name.'`')->find_array();
+
+        foreach($this->get_relations_list() as $rel){
+            $this->relations[$rel['COLUMN_NAME']] = array($rel['REFERENCED_TABLE_NAME'], $rel['REFERENCED_COLUMN_NAME']);
+        }
 
         foreach($heading as $col){
             if($col['Key'] == self::$primary_name){
@@ -54,11 +71,15 @@ class Shm_table {
 
             $col_res = array('id' => $col['Field'], 'name' => $name, 'type' => $type, 'length' => $length);
 
+            if(isset($this->relations[$col_res['id']])){
+                $col_res['rel'] = $this->relations[$col_res['id']];
+            }
+
             $column = isset($fields[$col['Field']])
                 ?self::init_column($fields[$col['Field']], $col_res)
                 :$col_res;
 
-            $this->columns[] = $column;
+            $this->columns[$column['id']] = $column;
 
             $this->fields_renders[$column['id']] = isset($fields_renders[$column['id']])
                 ?$fields_renders[$column['id']]($column)
@@ -123,7 +144,7 @@ class Shm_table {
             echo '<tr>';
             foreach($record as $field => $value){
                 echo '<td data-col="'.$field.'">';
-                echo $this->fields_renders[$field]->render('view', $field, $value);
+                echo $this->fields_renders[$field]->render('view', $value);
                 echo '</td>';
             }
             echo '</tr>';
@@ -142,7 +163,7 @@ class Shm_table {
             echo '<tr data-num="'.$i.'">';
             foreach($record as $field => $value){
                 echo '<td>';
-                echo $this->fields_renders[$field]->render('edit', $field, $value);
+                echo $this->fields_renders[$field]->render('edit', $value);
                 echo '</td>';
             }
             echo '<td><button class="remove">remove</button></td>';
@@ -156,12 +177,12 @@ class Shm_table {
      * Рендерер просмотра таблицы
      */
     public function render_view(){
-        echo '<table class="shm_table">';
+        echo '<table class="shm_table" data-primary="'.$this->primary.'" data-name="'.$this->name.'">';
 
         $this->render_view_heading();
         $this->render_view_body();
 
-        echo '<table>';
+        echo '</table>';
     }
 
     /**
@@ -185,11 +206,19 @@ class Shm_table {
 
         foreach($this->columns as $column){
             echo '<td>';
-            echo $this->fields_renders[$column['id']]->render('add', $column['id']);
+            echo $this->fields_renders[$column['id']]->render('add');
             echo '</td>';
         }
         echo '<td><button class="create">create</button></td>';
 
         echo '</tr></tfoot>';
+    }
+
+    public function get_relations_list(){
+        return $this->table()->raw_query("
+            SELECT * FROM information_schema.KEY_COLUMN_USAGE
+            WHERE TABLE_SCHEMA ='".$this->db->name."' AND TABLE_NAME ='".$this->name."' AND
+            CONSTRAINT_NAME <>'PRIMARY' AND REFERENCED_TABLE_NAME is not null;
+        ")->find_array();
     }
 }
