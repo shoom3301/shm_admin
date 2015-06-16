@@ -10,6 +10,8 @@ include_once('Util.php');
 include_once('server/Shm_database.php');
 include_once('server/Shm_table.php');
 
+define('SHM_DB', 'education');
+
 Util::DBConnect();
 
 /**
@@ -87,7 +89,7 @@ if(isset($_REQUEST['action'])){
 /**
  * Модель управления БД
  */
-$db = new Shm_database('xface', array(
+$db = new Shm_database(SHM_DB, array(
     'accesses' => 'Доступы',
     'courses' => 'Курсы',
     'languages' => 'Языки',

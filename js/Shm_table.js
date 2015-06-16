@@ -77,7 +77,11 @@ var Shm_table = Backbone.Model.extend({
     },
     createField: function(data){
         var $tbody = this.el.find('tbody');
-        var $record = $tbody.find('tr:first-child').clone();
+        var prot = $tbody.find('tr:first-child');
+        if(!prot || !prot[0]){
+            location.reload();
+        }
+        var $record = prot.clone();
         for(var v in data){
             if(data.hasOwnProperty(v)){
                 var inp = $record.find('input[data-col="'+v+'"]');

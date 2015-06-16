@@ -18,7 +18,7 @@ class Util {
      */
     public static function DBConnect(){
         $cfg = new Config();
-        ORM::configure('mysql:host='.$cfg->host.';dbname='.$cfg->database.';charset=utf8');
+        ORM::configure('mysql:host='.$cfg->host.';dbname='.SHM_DB.';charset=utf8');
         ORM::configure('username', $cfg->user);
         ORM::configure('password', $cfg->password);
         return 1;
