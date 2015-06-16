@@ -116,10 +116,23 @@ $db = new Shm_database('xface', array(
     )
 ));
 
+/**
+ * Запросы нуждающиеся в модели БД
+ */
 if(isset($_REQUEST['action'])){
     switch($_REQUEST['action']){
-        case 'relation':
-            (new Shm_table($_REQUEST['target'], $db, array(), array(), true))->render_view();
+        /**
+         * Получение связанного поля
+         */
+        case 'get_relation':
+            (new Shm_table($_REQUEST['target'], $db, array(), array(), array($_REQUEST['field'] => $_REQUEST['value'])))->render_view();
+            return 1;
+            break;
+        /**
+         * Получение связанной таблицы при редактировании или создании записи
+         */
+        case 'get_list':
+            (new Shm_table($_REQUEST['target'], $db, array(), array()))->render_view();
             return 1;
             break;
     }
@@ -144,6 +157,7 @@ if(isset($_REQUEST['action'])){
 
     <script type="text/javascript" src="js/shm.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/Shm_rel_tooltip.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/Shm_edit_list.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/Shm_table.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/Shm_add_form.js" charset="utf-8"></script>
 

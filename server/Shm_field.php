@@ -26,8 +26,7 @@ class Shm_field {
     public function render($type, $value = ''){
         if($type=='view'){
             if(isset($this->column['rel'])){
-                $rel = $this->column['rel'];
-                echo '<a data-shm-rel="'.$rel[0].'::'.$rel[1].'" href="">'.$value.'</a>';
+                echo '<a class="related_field">'.$value.'</a>';
             }else{
                 echo '<span>'.$value.'</span>';
             }

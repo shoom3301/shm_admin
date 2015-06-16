@@ -22,13 +22,12 @@ var Shm_rel_tooltip = Backbone.View.extend({
         return this;
     },
     show: function(){
-        this.$el.css(this.options.target.position()).show(300);
+        this.$el.css(this.options.target.position()).show(0);
     },
     hide: function(){
         var th = this;
-        this.$el.hide(300, function(){
-            th.destroy();
-        });
+        this.$el.hide(0);
+        th.destroy();
     },
     wait: function(){
         this.content('<img src="images/tooltip_loading.gif">');
@@ -47,5 +46,11 @@ var Shm_rel_tooltip = Backbone.View.extend({
             th.hide();
         });
         this.$el.append(btn);
+    },
+    centering: function(){
+        this.$el.css({
+            left: ($ww.width()/2)-(this.$el.width()/2),
+            top: ($ww.height()/2)-(this.$el.height()/2)
+        });
     }
 });

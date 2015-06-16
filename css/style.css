@@ -52,6 +52,7 @@ table.shm_table tfoot{
     position: absolute;
     z-index: 6;
     display: none;
+    box-shadow:         0 0 30px 0 rgba(50, 50, 50, 0.5);
 }
 
 .close_tooltip{
@@ -64,4 +65,14 @@ table.shm_table tfoot{
     border: 1px solid #cccccc;
     outline: none;
     cursor: pointer;
+}
+
+a.related_field{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.rel_tooltip .content{
+    max-height: 500px;
+    overflow-y: scroll;
 }

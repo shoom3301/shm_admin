@@ -35,10 +35,10 @@ class Shm_table {
     /**
      * Инициализация БД
      * @param $table_name String название таблицы
+     * @param $db Shm_database модель бд
      * @param $fields Array дополнительные настройки полей
      * @param $fields_renders Array модели рендеринга полей
-     * @param $db Shm_database модель бд
-     * @param $one Boolean выбрать только одну запись из таблицы
+     * @param Array|Bool $one Array выбрать только одну запись из таблицы
      */
     public function __construct($table_name, $db, $fields = array(), $fields_renders = array(), $one = false){
         $this->db = $db;
@@ -46,7 +46,7 @@ class Shm_table {
 
         $tbl = $this->table();
         if($one){
-            $this->records = array($tbl->find_one()->as_array());
+            $this->records = array($tbl->where($one)->find_one()->as_array());
         }else{
             $this->records = $tbl->find_array();
         }
@@ -115,6 +115,9 @@ class Shm_table {
         foreach($this->columns as $column){
             echo '<td data-col="'.$column['id'].'">';
             echo $column['name'];
+            if(isset($column['rel'])){
+                echo '<input class="rel_source" type="hidden" value="'.$column['rel'][0].'::'.$column['rel'][1].'"/>';
+            }
             echo '</td>';
         }
         echo '</tr></thead>';
@@ -128,6 +131,9 @@ class Shm_table {
         foreach($this->columns as $column){
             echo '<td data-col="'.$column['id'].'">';
             echo $column['name'];
+            if(isset($column['rel'])){
+                echo '<input class="rel_source" type="hidden" value="'.$column['rel'][0].'::'.$column['rel'][1].'"/>';
+            }
             echo '</td>';
         }
         echo '<td>Действие</td>';
@@ -214,6 +220,10 @@ class Shm_table {
         echo '</tr></tfoot>';
     }
 
+    /**
+     * Список связей таблицы
+     * @return Array массив связей столбцов таблицы
+     */
     public function get_relations_list(){
         return $this->table()->raw_query("
             SELECT * FROM information_schema.KEY_COLUMN_USAGE
