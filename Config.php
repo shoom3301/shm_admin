@@ -13,5 +13,4 @@ class Config {
     public $host = 'localhost';
     public $user = 'root';
     public $password = '';
-    public $database = 'xface';
 }
